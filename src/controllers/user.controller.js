@@ -19,11 +19,13 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const { name, userName, email, password } = req.body
 
-    if ([name, email, password, userName].some((field) => {
+    if ([name, email, password, userName].some((field) =>
         field.trim() === ""
-    })) throw new Error(400, "all fields are required!!")
+    )) throw new Error(400, "all fields are required!!")
 
-
+    userName = userName.toLowerCase()
+    email = email.toLowerCase()
+    
     const existingUser = await User.findOne({
         $or: [{ email }, { userName }]
     })
@@ -56,7 +58,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     res.status(201).json(
         {
-            user: user,
+            user: createdUser,
             message: "User created successfully!!"
         }
     )
@@ -85,6 +87,10 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new Error(401, "Wrong password entered!!")
 
     const { refreshToken, accessToken } = await generateRefreshAndAccessToken(existingUser._id)
+
+    existingUser.refreshToken = refreshToken
+
+    await existingUser.save()
 
     const loggedInUser = await User.findById(existingUser._id).select("-password -refreshToken")
 

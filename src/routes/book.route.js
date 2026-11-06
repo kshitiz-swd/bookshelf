@@ -13,6 +13,6 @@ router.get("/books/:bookId", auth, getBook)
 
 router.post("/books/reviews/:bookId", auth, addReview)
 
-router.patch("/books/:bookId", auth, editBook)
+router.patch("/books/:bookId", auth, upload.single("coverImage"), editBook)
 
 export default router

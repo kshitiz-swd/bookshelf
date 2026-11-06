@@ -1,3 +1,5 @@
+import { User } from "../models/user.model.js"
+import{Follow} from "../models/follow.model.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 
 const toggleFollow = asyncHandler(async (req, res) => {

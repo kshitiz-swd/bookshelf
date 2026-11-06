@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { GENRES } from "../constants.js";
 
 const bookSchema = new Schema({
     name: {
@@ -20,7 +21,7 @@ const bookSchema = new Schema({
     genre: {
         type: String,
         enum: {
-            values: ["horror", "romance", "thriller", "fiction", "non-fiction"],
+            values: GENRES,
             message: '{VALUE} is not a genre listed'
         },
         required: true

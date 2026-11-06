@@ -22,7 +22,7 @@ const addNewBook = asyncHandler(async (req, res) => {
     if (existingBook)
         throw new Error("Book with this name already exists!!")
 
-    const coverImageLocalPath = req.file.path
+    const coverImageLocalPath = req.file?.path
 
     if (!coverImageLocalPath)
         throw new Error("Cover image not provided!!")
@@ -251,6 +251,9 @@ const editBook = asyncHandler(async (req, res) => {
         updates.publishedYear = year
     }
 
+    if (Object.keys(updates).length === 0 && !req.file)
+        throw new ApiError(400, "Nothing to update")
+
     const coverImageLocalPath = req.file?.path
     const oldCoverImage = exisitingBook.coverImagePublicId
     let coverImage
@@ -270,7 +273,9 @@ const editBook = asyncHandler(async (req, res) => {
             _id: exisitingBook._id
         }, {
         $set: updates
-    }, { returnDocument: true, runValidators: true })
+    }, { new: true, runValidators: true })
+
+    if (!updatedBook) throw new Error("Book not found")
 
     if (coverImageLocalPath && oldCoverImage)
         await deleteOnCloudinary(oldCoverImage)
